@@ -1,31 +1,5 @@
-"""
-NYC Yellow Taxi Dataset - Supervised Learning Model Comparison Using PySpark
-
-Purpose:
-    This script implements a comparative experiment of three supervised learning models:
-    - Logistic Regression
-    - Support Vector Machine (Linear SVC)
-    - Gradient Boosting Trees
-    
-    The models are trained and evaluated on a sampled NYC Yellow Taxi dataset to predict
-    whether fare_amount > 30 (binary classification).
-
-Environment Setup:
-    - Requires PySpark 3.x
-    - Python 3.7+
-    - Java 8 or 11
-    
-How to Run:
-    1. Ensure PySpark is installed: pip install pyspark
-    2. Navigate to the term-paper/code directory
-    3. Run: python METCS777-term-paper-code-sample-Team5.py
-
-Author: Team 5
-Date: 2024-10-31
-"""
-
 # =============================================================================
-# 1️⃣ ENVIRONMENT SETUP
+# ENVIRONMENT SETUP
 # =============================================================================
 
 import time
@@ -51,11 +25,11 @@ def initialize_spark():
         .getOrCreate()
     
     spark.sparkContext.setLogLevel("WARN")  # Reduce verbose logging
-    print(f"✅ SparkSession initialized with {spark.sparkContext.defaultParallelism} cores")
+    print(f"SparkSession initialized with {spark.sparkContext.defaultParallelism} cores")
     return spark
 
 # =============================================================================
-# 2️⃣ DATA LOADING & PREPROCESSING
+# DATA LOADING & PREPROCESSING
 # =============================================================================
 
 def load_and_preprocess_data(spark, file_path):
@@ -91,12 +65,12 @@ def load_and_preprocess_data(spark, file_path):
         StructField("total_amount", DoubleType(), True)
     ])
     
-    print("📂 Loading dataset...")
+    print("Loading dataset...")
     df = spark.read.csv(file_path, header=False, schema=schema)
     print(f"   Initial dataset size: {df.count():,} records")
     
     # Data cleaning: remove null and invalid records
-    print("🧹 Cleaning data...")
+    print("Cleaning data...")
     df_clean = df.filter(
         (col("trip_distance") > 0) &
         (col("fare_amount") > 0) &
@@ -108,7 +82,7 @@ def load_and_preprocess_data(spark, file_path):
     print(f"   After cleaning: {df_clean.count():,} records")
     
     # Convert pickup_datetime to timestamp and extract features
-    print("⏰ Extracting temporal features...")
+    print("Extracting temporal features...")
     df_features = df_clean.withColumn(
         "pickup_timestamp", 
         col("pickup_datetime").cast(TimestampType())
@@ -133,8 +107,8 @@ def load_and_preprocess_data(spark, file_path):
     feature_cols = ["trip_distance", "passenger_count", "pickup_hour", "pickup_dayofweek"]
     final_df = df_with_target.select(feature_cols + ["label"])
     
-    print(f"✨ Preprocessing complete. Features: {feature_cols}")
-    print("📊 Target distribution:")
+    print(f"Preprocessing complete. Features: {feature_cols}")
+    print("Target distribution:")
     final_df.groupBy("label").count().show()
     
     return final_df, feature_cols
@@ -152,12 +126,12 @@ def prepare_ml_data(df, feature_cols):
     """
     
     # Assemble features into a single vector column
-    print("🔧 Assembling features...")
+    print("Assembling features...")
     assembler = VectorAssembler(inputCols=feature_cols, outputCol="features")
     df_assembled = assembler.transform(df).select("features", "label")
     
     # Split data into training and test sets (80/20)
-    print("✂️ Splitting data (80% train, 20% test)...")
+    print("Splitting data (80% train, 20% test)...")
     train_df, test_df = df_assembled.randomSplit([0.8, 0.2], seed=42)
     
     train_count = train_df.count()
@@ -169,12 +143,12 @@ def prepare_ml_data(df, feature_cols):
     return train_df, test_df
 
 # =============================================================================
-# 3️⃣ MODEL TRAINING & EVALUATION
+# MODEL TRAINING & EVALUATION
 # =============================================================================
 
 def train_logistic_regression(train_df, test_df):
     """Train and evaluate Logistic Regression model."""
-    print("\n🤖 Training Logistic Regression...")
+    print("\nTraining Logistic Regression...")
     
     start_time = time.time()
     lr = LogisticRegression(featuresCol="features", labelCol="label", maxIter=100)
@@ -191,9 +165,9 @@ def train_logistic_regression(train_df, test_df):
     auc = auc_evaluator.evaluate(lr_predictions)
     accuracy = accuracy_evaluator.evaluate(lr_predictions)
     
-    print(f"   ✅ Training completed in {training_time:.2f} seconds")
-    print(f"   📊 AUC: {auc:.4f}")
-    print(f"   🎯 Accuracy: {accuracy:.4f}")
+    print(f"   Training completed in {training_time:.2f} seconds")
+    print(f"   AUC: {auc:.4f}")
+    print(f"   Accuracy: {accuracy:.4f}")
     
     return {
         'model': 'Logistic Regression',
@@ -204,7 +178,7 @@ def train_logistic_regression(train_df, test_df):
 
 def train_svm(train_df, test_df):
     """Train and evaluate Support Vector Machine model."""
-    print("\n🤖 Training Support Vector Machine...")
+    print("\nTraining Support Vector Machine...")
     
     start_time = time.time()
     svm = LinearSVC(featuresCol="features", labelCol="label", maxIter=100)
@@ -221,9 +195,9 @@ def train_svm(train_df, test_df):
     auc = auc_evaluator.evaluate(svm_predictions)
     accuracy = accuracy_evaluator.evaluate(svm_predictions)
     
-    print(f"   ✅ Training completed in {training_time:.2f} seconds")
-    print(f"   📊 AUC: {auc:.4f}")
-    print(f"   🎯 Accuracy: {accuracy:.4f}")
+    print(f"   Training completed in {training_time:.2f} seconds")
+    print(f"   AUC: {auc:.4f}")
+    print(f"   Accuracy: {accuracy:.4f}")
     
     return {
         'model': 'Support Vector Machine',
@@ -234,7 +208,7 @@ def train_svm(train_df, test_df):
 
 def train_gradient_boosting(train_df, test_df):
     """Train and evaluate Gradient Boosting Trees model."""
-    print("\n🤖 Training Gradient Boosting Trees...")
+    print("\nTraining Gradient Boosting Trees...")
     
     start_time = time.time()
     gbt = GBTClassifier(featuresCol="features", labelCol="label", maxIter=20)
@@ -251,9 +225,9 @@ def train_gradient_boosting(train_df, test_df):
     auc = auc_evaluator.evaluate(gbt_predictions)
     accuracy = accuracy_evaluator.evaluate(gbt_predictions)
     
-    print(f"   ✅ Training completed in {training_time:.2f} seconds")
-    print(f"   📊 AUC: {auc:.4f}")
-    print(f"   🎯 Accuracy: {accuracy:.4f}")
+    print(f"   Training completed in {training_time:.2f} seconds")
+    print(f"   AUC: {auc:.4f}")
+    print(f"   Accuracy: {accuracy:.4f}")
     
     return {
         'model': 'Gradient Boosting',
@@ -263,13 +237,13 @@ def train_gradient_boosting(train_df, test_df):
     }
 
 # =============================================================================
-# 4️⃣ RESULTS VISUALIZATION & REPORTING
+# RESULTS VISUALIZATION & REPORTING
 # =============================================================================
 
 def create_results_table(results):
     """Create and display results comparison table."""
     print("\n" + "="*60)
-    print("📈 MODEL PERFORMANCE COMPARISON")
+    print("MODEL PERFORMANCE COMPARISON")
     print("="*60)
     
     # Create DataFrame for results
@@ -287,7 +261,7 @@ def create_results_table(results):
     os.makedirs(output_dir, exist_ok=True)
     results_path = os.path.join(output_dir, 'model_comparison_results.csv')
     results_df.to_csv(results_path, index=False)
-    print(f"\n💾 Results saved to: {results_path}")
+    print(f"\nResults saved to: {results_path}")
     
     return results_df
 
@@ -337,20 +311,20 @@ def plot_results(results_df):
             ax3.text(bar.get_x() + bar.get_width()/2., height + 0.1,
                     f'{height:.1f}s', ha='center', va='bottom')
         
-        # Combined performance radar chart would go in ax4, but let's use a simple summary
+        # Summary insights
         ax4.axis('off')
         summary_text = "Key Insights:\n\n"
         best_auc = results_df.loc[results_df['auc'].idxmax(), 'model']
         best_acc = results_df.loc[results_df['accuracy'].idxmax(), 'model']
         fastest = results_df.loc[results_df['training_time'].idxmin(), 'model']
         
-        summary_text += f"• Highest AUC: {best_auc}\n"
-        summary_text += f"• Highest Accuracy: {best_acc}\n"
-        summary_text += f"• Fastest Training: {fastest}\n\n"
+        summary_text += f"Highest AUC: {best_auc}\n"
+        summary_text += f"Highest Accuracy: {best_acc}\n"
+        summary_text += f"Fastest Training: {fastest}\n\n"
         summary_text += "Recommendations:\n"
-        summary_text += "• For production: Consider accuracy vs speed tradeoff\n"
-        summary_text += "• For large datasets: Evaluate scalability\n"
-        summary_text += "• For real-time: Prioritize training time"
+        summary_text += "For production: Consider accuracy vs speed tradeoff\n"
+        summary_text += "For large datasets: Evaluate scalability\n"
+        summary_text += "For real-time: Prioritize training time"
         
         ax4.text(0.05, 0.95, summary_text, transform=ax4.transAxes, fontsize=11,
                 verticalalignment='top', bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.8))
@@ -362,23 +336,23 @@ def plot_results(results_df):
         os.makedirs(output_dir, exist_ok=True)
         viz_path = os.path.join(output_dir, 'model_comparison_visualization.png')
         plt.savefig(viz_path, dpi=300, bbox_inches='tight')
-        print(f"📊 Visualization saved to: {viz_path}")
+        print(f"Visualization saved to: {viz_path}")
         plt.show()
         
     except Exception as e:
-        print(f"⚠️  Could not create visualization: {e}")
+        print(f"Could not create visualization: {e}")
         print("   (This is normal if running in a headless environment)")
 
 # =============================================================================
-# 5️⃣ MAIN EXECUTION
+# MAIN EXECUTION
 # =============================================================================
 
 def main():
     """Main execution function that orchestrates the entire experiment."""
     
-    print("🚕" * 20)
+    print("=" * 60)
     print("NYC YELLOW TAXI DATASET - ML MODEL COMPARISON")
-    print("🚕" * 20)
+    print("=" * 60)
     
     # Initialize Spark
     spark = initialize_spark()
@@ -408,21 +382,21 @@ def main():
         results_df = create_results_table(results)
         plot_results(results_df)
         
-        print("\n🎉 Experiment completed successfully!")
-        print("\n💡 Key Takeaways:")
-        print("   • All three models show different strengths")
-        print("   • Consider your specific use case requirements")
-        print("   • Scalability matters for production deployment")
+        print("\nExperiment completed successfully!")
+        print("\nKey Takeaways:")
+        print("   - All three models show different strengths")
+        print("   - Consider your specific use case requirements")
+        print("   - Scalability matters for production deployment")
         
     except Exception as e:
-        print(f"❌ Error during execution: {e}")
+        print(f"Error during execution: {e}")
         import traceback
         traceback.print_exc()
     
     finally:
         # Clean up Spark session
         spark.stop()
-        print("🛑 SparkSession stopped")
+        print("SparkSession stopped")
 
 if __name__ == "__main__":
     main()

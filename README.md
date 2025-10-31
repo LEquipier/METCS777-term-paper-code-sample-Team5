@@ -10,7 +10,7 @@ This repository contains the term project for **METCS777 - Big Data Analytics** 
 
 **Course:** METCS777 - Big Data Analytics  
 **Institution:** Boston University Metropolitan College  
-**Date:** October 2024
+**Date:** October 31st, 2025
 
 ## 🎯 Project Objectives
 
@@ -75,7 +75,7 @@ conda activate spark-env
 conda install -c conda-forge pyspark pandas matplotlib
 ```
 
-## 🚀 How to Run the Code
+## How to Run the Code
 
 ### Step 1: Navigate to Code Directory
 ```bash
@@ -100,7 +100,7 @@ The script will:
 - **Memory usage:** ~2-4 GB (automatically managed by Spark)
 - **Output files:** CSV results and PNG visualization
 
-## 📊 Results of Running the Code
+## Results of Running the Code
 
 ### Performance Comparison Table
 
@@ -123,7 +123,7 @@ The script will:
 - **Class imbalance** (162 positive vs 9,764 negative samples) handled well by all models
 - **Computational efficiency** varies significantly, with Logistic Regression being 2.5x faster than SVM
 
-## 📊 Dataset Description and Analysis
+## Dataset Description and Analysis
 
 ### NYC Yellow Taxi Dataset
 
@@ -207,7 +207,7 @@ The script will:
 - **Accuracy:** All above 98%, reflecting dataset characteristics and model quality
 - **Training Efficiency:** Linear models significantly faster than ensemble method
 
-## 🔍 Technical Implementation Details
+## Technical Implementation Details
 
 ### Spark Configuration
 ```python
@@ -231,7 +231,7 @@ SparkSession.builder \
 - **Cross-validation ready** architecture
 - **Scalable design** for larger datasets
 
-## 🎯 Business Applications and Implications
+## Business Applications and Implications
 
 ### Practical Use Cases
 1. **Dynamic pricing systems** for ride-sharing platforms
@@ -245,7 +245,7 @@ SparkSession.builder \
 - **Real-time deployment:** Model serialization and serving capabilities
 - **Batch processing:** Suitable for large-scale daily predictions
 
-## 🚧 Future Enhancements
+## Future Enhancements
 
 1. **Feature enrichment:** Weather data, traffic patterns, events
 2. **Deep learning models:** Neural networks for complex pattern recognition
@@ -254,7 +254,7 @@ SparkSession.builder \
 5. **Advanced metrics:** Precision, Recall, F1-score analysis
 6. **Geographic analysis:** Spatial clustering and zone-based models
 
-## 📚 References and Dependencies
+## References and Dependencies
 
 ### Libraries Used
 - **PySpark 3.x:** Distributed computing and MLlib algorithms
@@ -270,11 +270,11 @@ SparkSession.builder \
 
 ---
 
-## 📞 Contact Information
+## Contact Information
 
 **Team Members:**
-- **Boran Liu:** [email/contact]
-- **Hongkai Dai:** [email/contact]
+- **Boran Liu:** [jksliu@bu.edu]
+- **Hongkai Dai:** [daihk@bu.edu]
 
 **Course:** METCS777 - Big Data Analytics  
 **Institution:** Boston University Metropolitan College
