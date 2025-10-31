@@ -12,7 +12,7 @@ This repository contains the term project for **METCS777 - Big Data Analytics** 
 **Institution:** Boston University Metropolitan College  
 **Date:** October 31st, 2025
 
-## 🎯 Project Objectives
+## Project Objectives
 
 The primary goal is to implement and compare three supervised learning algorithms:
 - **Logistic Regression** (baseline linear model)
@@ -21,7 +21,7 @@ The primary goal is to implement and compare three supervised learning algorithm
 
 Each model predicts whether a taxi fare will exceed $30 based on trip characteristics, evaluating performance through AUC, accuracy, and training time metrics.
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 METCS777-term-paper-code-sample-Team5/
@@ -36,7 +36,7 @@ METCS777-term-paper-code-sample-Team5/
 │       └── model_comparison_visualization.png        # Performance charts
 ```
 
-## 🛠 Environment Setup
+## Environment Setup
 
 ### Prerequisites
 
@@ -106,22 +106,22 @@ The script will:
 
 | Model | AUC Score | Accuracy | Training Time (s) |
 |-------|-----------|----------|-------------------|
-| **Logistic Regression** | 0.9709 | 0.9942 | 1.94 |
-| **Support Vector Machine** | 0.9718 | 0.9932 | 4.92 |
-| **Gradient Boosting** | 0.9089 | 0.9822 | 2.99 |
+| **Logistic Regression** | 0.9709 | 0.9942 | 2.21 |
+| **Support Vector Machine** | 0.9718 | 0.9932 | 6.27 |
+| **Gradient Boosting** | 0.9089 | 0.9822 | 3.12 |
 
 ### Key Findings
 
 1. **Best Overall Performance:** Support Vector Machine achieves highest AUC (0.9718)
 2. **Highest Accuracy:** Logistic Regression with 99.42% accuracy
-3. **Fastest Training:** Logistic Regression at 1.94 seconds
+3. **Fastest Training:** Logistic Regression at 2.21 seconds
 4. **Balance Consideration:** All models show excellent performance with minimal accuracy differences
 
 ### Performance Insights
 
 - **Linear models** (Logistic Regression & SVM) outperform the non-linear Gradient Boosting
 - **Class imbalance** (162 positive vs 9,764 negative samples) handled well by all models
-- **Computational efficiency** varies significantly, with Logistic Regression being 2.5x faster than SVM
+- **Computational efficiency** varies significantly, with Logistic Regression being 2.8x faster than SVM
 
 ## Dataset Description and Analysis
 
