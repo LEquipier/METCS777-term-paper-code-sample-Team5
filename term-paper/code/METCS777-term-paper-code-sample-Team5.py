@@ -25,46 +25,38 @@ except ImportError:
     print("Warning: scikit-learn not available. ROC curves will be skipped.")
     print("Install with: pip install scikit-learn")
 
+
 def initialize_spark():
     """Initialize SparkSession with optimized configuration for local execution."""
     print("\n" + "="*70)
     print(" " * 15 + "NYC TAXI DATASET - ML MODEL COMPARISON")
     print("="*70)
     print("\nInitializing Spark Session...")
-    
+    #--------------------------------------------------------------------------------
     spark = SparkSession.builder \
         .appName("NYC_Taxi_ML_Comparison") \
         .master("local[*]") \
         .config("spark.sql.adaptive.enabled", "true") \
         .config("spark.sql.adaptive.coalescePartitions.enabled", "true") \
         .getOrCreate()
-    
+    #--------------------------------------------------------------------------------
     spark.sparkContext.setLogLevel("WARN")  # Reduce verbose logging
     cores = spark.sparkContext.defaultParallelism
     print(f"  > Spark initialized with {cores} CPU cores")
     print(f"  > Ready for distributed computing!\n")
     return spark
 
+
 # =============================================================================
 # DATA LOADING & PREPROCESSING
 # =============================================================================
 
 def load_and_preprocess_data(spark, file_path=None):
-    """
-    Load NYC taxi dataset and perform preprocessing steps with enhanced progress display.
-    
-    Args:
-        spark: SparkSession object
-        file_path: Path to the CSV file (optional, will auto-detect if None)
-        
-    Returns:
-        preprocessed DataFrame with features and target variable
-    """
     
     print("="*70)
     print("STEP 1: DATA LOADING & PREPROCESSING")
     print("="*70)
-    
+#--------------------------------------------------------------------------------
     # Define schema based on the dataset structure
     schema = StructType([
         StructField("medallion", StringType(), True),
@@ -85,7 +77,7 @@ def load_and_preprocess_data(spark, file_path=None):
         StructField("tolls_amount", DoubleType(), True),
         StructField("total_amount", DoubleType(), True)
     ])
-    
+#--------------------------------------------------------------------------------
     # Multi-path detection if no specific path provided
     if file_path is None:
         possible_paths = [
@@ -115,6 +107,7 @@ def load_and_preprocess_data(spark, file_path=None):
     
     # Data cleaning: remove null and invalid records
     print("\n2. Cleaning data (removing outliers and nulls)...")
+    #--------------------------------------------------------------------------------
     df_clean = df.filter(
         (col("trip_distance") > 0) &
         (col("fare_amount") > 0) &
@@ -122,7 +115,7 @@ def load_and_preprocess_data(spark, file_path=None):
         (col("trip_distance") < 100) &  # Remove outliers
         (col("fare_amount") < 200)      # Remove outliers
     )
-    
+    #--------------------------------------------------------------------------------
     clean_count = df_clean.count()
     removed = initial_count - clean_count
     print(f"   > Cleaned dataset: {clean_count:,} records")
@@ -130,6 +123,7 @@ def load_and_preprocess_data(spark, file_path=None):
     
     # Convert pickup_datetime to timestamp and extract features
     print("\n3. Engineering features from raw data...")
+    #--------------------------------------------------------------------------------
     df_features = df_clean.withColumn(
         "pickup_timestamp", 
         col("pickup_datetime").cast(TimestampType())
@@ -143,18 +137,21 @@ def load_and_preprocess_data(spark, file_path=None):
         "passenger_count",
         when(col("trip_time_in_secs") > 0, 1).otherwise(0)  # Approximate passenger count
     )
-    
+    #--------------------------------------------------------------------------------
+
     print("   > Extracted temporal features:")
     print("     - pickup_hour (0-23)")
     print("     - pickup_dayofweek (1-7)")
     
     # Create target variable: label = 1 if fare_amount > 30 else 0
     print("\n4. Creating target variable (fare > $30)...")
+    #--------------------------------------------------------------------------------
     df_with_target = df_features.withColumn(
         "label",
         when(col("fare_amount") > 30, 1).otherwise(0)
     )
-    
+    #--------------------------------------------------------------------------------
+
     # Show class distribution
     print("\n5. Target Distribution:")
     distribution = df_with_target.groupBy("label").count().collect()
@@ -172,25 +169,19 @@ def load_and_preprocess_data(spark, file_path=None):
     return final_df, feature_cols
 
 def prepare_ml_data(df, feature_cols):
-    """
-    Prepare data for machine learning by assembling features and splitting dataset.
-    
-    Args:
-        df: Input DataFrame
-        feature_cols: List of feature column names
-        
-    Returns:
-        train_df, test_df: Training and test datasets
-    """
     
     # Assemble features into a single vector column
     print("\n7. Preparing data for machine learning...")
+    #--------------------------------------------------------------------------------
     assembler = VectorAssembler(inputCols=feature_cols, outputCol="features")
+    #--------------------------------------------------------------------------------
     df_assembled = assembler.transform(df).select("features", "label")
     
     # Split data into training and test sets (80/20)
+    #--------------------------------------------------------------------------------
     train_df, test_df = df_assembled.randomSplit([0.8, 0.2], seed=42)
-    
+    #--------------------------------------------------------------------------------
+
     train_count = train_df.count()
     test_count = test_df.count()
     
@@ -290,7 +281,7 @@ def train_model_with_progress(model_name, model, train_df, test_df):
         'accuracy': accuracy,
         'training_time': training_time
     }
-
+#--------------------------------------------------------------------------------
 def train_logistic_regression(train_df, test_df):
     """Train and evaluate Logistic Regression model."""
     lr = LogisticRegression(featuresCol="features", labelCol="label", maxIter=100)
@@ -305,6 +296,7 @@ def train_gradient_boosting(train_df, test_df):
     """Train and evaluate Gradient Boosting Trees model."""
     gbt = GBTClassifier(featuresCol="features", labelCol="label", maxIter=20)
     return train_model_with_progress("Gradient Boosting Trees", gbt, train_df, test_df)
+#--------------------------------------------------------------------------------
 
 # =============================================================================
 # RESULTS VISUALIZATION & REPORTING
